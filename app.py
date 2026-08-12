@@ -1,48 +1,64 @@
 import pandas as pd
-import re
 import streamlit as st
-
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-st.title("Movie Recommendation System")
+# Load dataset
+movies = pd.read_csv("tmdb_5000_movies.csv")
 
-df = pd.read_csv("tmdb_5000_movies.csv")
+# Fill missing text values
+movies["overview"] = movies["overview"].fillna("")
+movies["genres"] = movies["genres"].fillna("")
+movies["keywords"] = movies["keywords"].fillna("")
 
-# Fill empty text values first.
-df["overview"] = df["overview"].fillna("")
-df["genres"] = df["genres"].fillna("")
-df["keywords"] = df["keywords"].fillna("")
-
-# Use the three text columns as the movie description.
-df["clean_text"] = df["overview"] + " " + df["genres"] + " " + df["keywords"]
-df["clean_text"] = df["clean_text"].str.lower()
-df["clean_text"] = df["clean_text"].apply(lambda x: re.sub(r"[^a-z0-9\s]", " ", x))
-df["clean_text"] = df["clean_text"].str.replace(r"\s+", " ", regex=True).str.strip()
-
-stop_words = set("a an the and or but if is are was were of to in on for with from by this that these those it its as at be been being".split())
-df["clean_text"] = df["clean_text"].apply(
-    lambda x: " ".join(word for word in x.split() if word not in stop_words)
+# Combine movie text
+movies["text"] = (
+    movies["overview"] + " " +
+    movies["genres"] + " " +
+    movies["keywords"]
 )
 
-# Turn the text into TF-IDF vectors.
-tfidf = TfidfVectorizer(max_features=5000, ngram_range=(1, 2))
-tfidf_matrix = tfidf.fit_transform(df["clean_text"])
-similarity_matrix = cosine_similarity(tfidf_matrix)
+# Convert text to TF-IDF
+tfidf = TfidfVectorizer(stop_words="english", max_features=5000)
+tfidf_matrix = tfidf.fit_transform(movies["text"])
 
-def recommend(movie_name, n=5):
-    item_index = df.index[df["title"].str.lower() == movie_name.lower()][0]
-    scores = similarity_matrix[item_index]
-    indexes = scores.argsort()[::-1]
-    indexes = indexes[indexes != item_index][:n]
 
-    result = df.iloc[indexes][["title"]].copy()
-    result["similarity_score"] = scores[indexes].round(3)
-    return result
+def recommend(name_movie):
+    movie_index = movies[movies["title"] == name_movie].index[0]
 
-movies = df["title"].dropna().drop_duplicates().sort_values().tolist()
-movie = st.selectbox("Select a movie:", movies)
+    # Compare only the selected movie with all movies
+    recommendations = cosine_similarity(
+        tfidf_matrix[movie_index],
+        tfidf_matrix
+    ).flatten()
+
+    movie_list = sorted(
+        enumerate(recommendations),
+        reverse=True,
+        key=lambda x: x[1]
+    )[1:6]
+
+    recommended_movies = []
+
+    for i in movie_list:
+        recommended_movies.append({
+            "title": movies.iloc[i[0]]["title"],
+            "similarity_score": round(i[1], 3)
+        })
+
+    return pd.DataFrame(recommended_movies)
+
+
+# Streamlit interface
+st.title("Movie Recommendation System")
+
+movie_name = st.selectbox(
+    "Select a movie:",
+    movies["title"].tolist()
+)
 
 if st.button("Get Recommendations"):
+    result = recommend(movie_name)
+
     st.subheader("Recommended Movies")
-    st.dataframe(recommend(movie), width="stretch")
+    st.dataframe(result, hide_index=True)
