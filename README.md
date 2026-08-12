@@ -2,68 +2,44 @@
 
 ## Dataset
 
-Kaggle: TMDB 5000 Movie Dataset
+I used the TMDB 5000 Movie Dataset from Kaggle.
 
-https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata
+Dataset link: https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata
 
-The dataset contains movie metadata including title, overview, genres and keywords.
+The movie data has a title, overview, genres and keywords. I used these text fields for content-based recommendations.
 
 ## Project Links
 
-### GitHub Repository
+GitHub: https://github.com/yashpatni14/Movie-Recommendation-System
 
-https://github.com/yashpatni14/Movie-Recommendation-System
-
-### Live Render Application
-
-https://movie-recommendation-system-etrf.onrender.com
+Live app: https://movie-recommendation-system-etrf.onrender.com
 
 ## Files
 
-- `Movie_Recommendation.ipynb` — Tasks 1-5
-- `app.py` — Task 6 Streamlit interface
-- `requirements.txt` — required Python packages
-- `tmdb_5000_movies.csv` — movie dataset
-- `README.md` — project information and links
+- `Movie_Recommendation.ipynb` - Tasks 1 to 5
+- `app.py` - Streamlit application for Task 6
+- `requirements.txt` - required packages
+- `tmdb_5000_movies.csv` - dataset
+- `README.md` - project information and links
 
-## Tasks 1-5
+## How to run
 
-1. Load and understand the dataset.
-2. Preprocess the movie text.
-3. Convert text into TF-IDF vectors.
-4. Compute cosine similarity.
-5. Build and test a content-based recommendation function.
-
-## Other Tasks
-
-### Task 6 — Streamlit
-
-Use `app.py` for the simple dropdown + recommendation button interface.
-
-Run:
-
-`streamlit run app.py`
-
-### Task 7 — Git & GitHub
-
-The project is available on GitHub:
-
-https://github.com/yashpatni14/Movie-Recommendation-System
-
-### Task 8 — Render
-
-The application is deployed on Render.
-
-Build command:
+Install the packages:
 
 `pip install -r requirements.txt`
 
-Start command:
+Run the app:
 
-`streamlit run app.py --server.port $PORT --server.address 0.0.0.0`
+`streamlit run app.py`
 
-### Task 9 — Final Validation
+## Tasks completed
 
-Live application:
-
-https://movie-recommendation-system-etrf.onrender.com
+- Task 1: Load and understand the dataset
+- Task 2: Text preprocessing
+- Task 3: TF-IDF vectorization
+- Task 4: Cosine similarity
+- Task 5: Recommendation function
+- Task 6: Streamlit interface
+- Task 7: GitHub
+- Task 8: Render deployment
+- Task 9: Final validation
